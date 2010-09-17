@@ -117,23 +117,23 @@ TODO: preserve .m3u playlists on update
 
 
 
-DISSECT_BASE_DIR = "Dissected Tracks/"
+DISSECT_BASE_DIR = u"Dissected Tracks/"
 DIRECTORY_COUNT = 10
 DEFAULT_LAME_OPTS = "--quiet -h -V 5"
-MASTER_PLAYLIST_FILE = "repear_playlists.ini"
-SCROBBLE_CONFIG_FILE = "repear_scrobble.ini"
-SUPPORTED_FILE_FORMATS = (".mp3", ".ogg", ".m4a", ".m4b", ".mp4")
-MUSIC_DIR = "iPod_Control/Music/"
-CONTROL_DIR = "iPod_Control/iTunes/"
-ARTWORK_DIR = "iPod_Control/Artwork/"
-DB_FILE = CONTROL_DIR + "iTunesDB"
-CACHE_FILE = CONTROL_DIR + "repear.cache"
-MODEL_FILE = CONTROL_DIR + "repear.model"
-FWID_FILE = CONTROL_DIR + "fwid"
-SCROBBLE_QUEUE_FILE = CONTROL_DIR + "repear.scrobble_queue"
-ARTWORK_CACHE_FILE = ARTWORK_DIR + "repear.artwork_cache"
-ARTWORK_DB_FILE = ARTWORK_DIR + "ArtworkDB"
-def OLDNAME(x): return x.replace("repear", "retune")
+MASTER_PLAYLIST_FILE = u"repear_playlists.ini"
+SCROBBLE_CONFIG_FILE = u"repear_scrobble.ini"
+SUPPORTED_FILE_FORMATS = (u".mp3", u".ogg", u".m4a", u".m4b", u".mp4")
+MUSIC_DIR = u"iPod_Control/Music/"
+CONTROL_DIR = u"iPod_Control/iTunes/"
+ARTWORK_DIR = u"iPod_Control/Artwork/"
+DB_FILE = CONTROL_DIR + u"iTunesDB"
+CACHE_FILE = CONTROL_DIR + u"repear.cache"
+MODEL_FILE = CONTROL_DIR + u"repear.model"
+FWID_FILE = CONTROL_DIR + u"fwid"
+SCROBBLE_QUEUE_FILE = CONTROL_DIR + u"repear.scrobble_queue"
+ARTWORK_CACHE_FILE = ARTWORK_DIR + u"repear.artwork_cache"
+ARTWORK_DB_FILE = ARTWORK_DIR + u"ArtworkDB"
+def OLDNAME(x): return x.replace(u"repear", u"retune")
 
 import sys, optparse, os, fnmatch, stat, string, time, types, cPickle, random
 import re, warnings, traceback, getpass, md5
@@ -159,11 +159,11 @@ def open_log():
 
 def log(line, flush=True):
     global logfile
-    sys.stdout.write(line)
+    sys.stdout.write(printable(line))
     if flush: sys.stdout.flush()
     if logfile:
         try:
-            logfile.write(line)
+            logfile.write(printable(line))
             if flush: logfile.flush()
         except IOError:
             broken_log = True
@@ -300,13 +300,13 @@ def move_file(src, dest):
     # check if source file exists
     if not os.path.isfile(src):
         log("[FAILED]\nERROR: source file `%s' doesn't exist\n" %
-            printable(src), True)
+            src, True)
         return 'missing'
 
     # don't clobber files (wouldn't work on Windows anyway)
     if os.path.isfile(dest):
         log("[FAILED]\nERROR: destination file `%s' already exists\n" %
-            printable(dest), True)
+            dest, True)
         return 'exists'
 
     # create parent directories if necessary
@@ -316,7 +316,7 @@ def move_file(src, dest):
             os.makedirs(dest_dir)
         except OSError, e:
             log("[FAILED]\nERROR: can't create destination directory `%s': %s\n" %
-                (printable(dest_dir), e.strerror), True)
+                (dest_dir, e.strerror), True)
             return 'mkdir'
 
     # finally rename it
@@ -324,7 +324,7 @@ def move_file(src, dest):
         os.rename(src, dest)
     except OSError, e:
         log(" [FAILED]\nERROR: can't move `%s' to `%s': %s\n" %
-            (printable(src), printable(dest), e.strerror), True)
+            (src, dest, e.strerror), True)
         return 'move'
     log("[OK]\n", True)
     return None
@@ -595,7 +595,7 @@ def ImportPlayCounts(cache, index, scrobbler=None):
     # parse old iTunesDB
     try:
         db = iTunesDB.DatabaseReader()
-        files = [printable(item.get('path', u'??')[1:].replace(u':', u'/')).lower() for item in db]
+        files = [item.get('path', u'??')[1:].replace(u':', u'/').lower() for item in db]
         db.f.close()
         del db
     except (IOError, iTunesDB.InvalidFormat):
@@ -744,16 +744,16 @@ def make_cache_index(cache):
     index = {}
     for i in xrange(len(cache)):
         for path in [cache[i][f] for f in ('path', 'original path') if f in cache[i]]:
-            key = printable(path).lower()
+            key = path.lower()
             if key in index:
-                log("ERROR: `%s' is cached multiple times\n" % printable(path))
+                log("ERROR: `%s' is cached multiple times\n" % path)
             else:
                 index[key] = i
     return index
 
 
 def find_in_cache(cache, index, path, s):
-    i = index.get(printable(path).lower(), None)
+    i = index.get(path.lower(), None)
     if i is None:
         return (False, None)  # not found
     info = cache[i]
@@ -835,10 +835,10 @@ def move_music(src, dest, info):
             return info
 
 
-def freeze_dir(cache, index, allocator, playlists=[], base="", artwork=None):
+def freeze_dir(cache, index, allocator, playlists=[], base=u"", artwork=None):
     global g_freeze_error_count
     try:
-        flist = filter(None, [check_file(base, fn) for fn in os.listdir(base or ".")])
+        flist = filter(None, [check_file(base, fn) for fn in os.listdir(base or u".")])
     except KeyboardInterrupt:
         raise
     except:
@@ -1665,8 +1665,8 @@ NOTE: The database is already unfrozen.
     success = 0
     failed = 0
     for info in cache:
-        src = printable(info.get('path', ""))
-        dest = printable(info.get('original path', ""))
+        src = info.get('path', "")
+        dest = info.get('original path', "")
         if not src:
             log("ERROR: track lacks path attribute\n")
             continue
