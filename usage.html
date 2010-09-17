@@ -1,0 +1,349 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>rePear User's Guide</title>
+</head><body>
+<!--SOT-->
+
+<h1>rePear User's Guide</h1>
+
+<p id="version">
+<strong>Author:</strong> Martin J. Fiedler &lt;<a href="mailto:martin.fiedler@gmx.net">martin.fiedler@gmx.net</a>&gt;<br />
+<strong>Version:</strong> 0.4.1<br />
+<strong>Date:</strong> 2009-02-25</p>
+
+
+<h2>For the impatient ...</h2>
+
+<p><strong>Initial Setup</strong></p>
+<ol class="indented">
+<li>initialize the iPod with iTunes</li>
+<li>remove all tracks from the iPod with iTunes (optional)</li>
+<li>install rePear on the iPod<ul>
+    <li>On Windows: unpack the .zip file into the iPod's root directory</li>
+    <li>On other systems: copy rePear (the <code>.py</code> files) into the iPod's root directory</li></ul></li>
+<li>run <code>repear&nbsp;config</code> or use the GUI (<code>rePearUI.exe</code>) to configure rePear</li>
+<li>run <code>repear&nbsp;dissect</code> or click the &raquo;dissect&laquo; button in the GUI to have the existing iTunes music library broken down into files and folders with an <code>/artist/album/title</code> scheme (optional, <span style="color:red;">dangerous</span>)</li>
+<li>copy music onto the iPod with the file manager you like best</li>
+<li>run rePear to <strong>freeze</strong> the database</li>
+<li>wait</li>
+<li>safely(!) disconnect the iPod</li>
+<li>listen to your music (optional, but recommended :)</li>
+</ol>
+
+<p><strong>Regular Maintenance</strong> (i.e. Manage your Music)</p>
+<ol class="indented">
+<li>connect the iPod to your computer</li>
+<li>run rePear to <strong>unfreeze</strong> the database</li>
+<li>do whatever you want with your music files</li>
+<li>run rePear to <strong>freeze</strong> the database again</li>
+<li>safely(!) disconnect the iPod</li>
+<li>enjoy your music</li>
+</ol>
+
+
+<h2 class="bar">rePear Setup &ndash; Step by Step</h2>
+<p>First, hold your breath. This section is awfully long, but that's only because it's written in a very detailed manner. It should not take you longer than about half an hour to get everything going (or ten minutes if you already have a decent Python installation or are working on Windows).</p>
+
+<p>Now, this is what you have to do to use rePear with your iPod:</p>
+
+<h3>1. Prepare the iPod</h3>
+
+<p>If your iPod is new, you have to connect it to your computer and have it initialized by iTunes at least one time. If you used your iPod with iTunes before, then it's up to you: You may delete all tracks from it to start all over with rePear, but you may as well keep the tracks installed by iTunes. If they contain correct ID3 tags and are all unencrypted MP3 or AAC, this should work fine.</p>
+
+<p>You also have to find out where the iPod's root directory is. On Windows, this is the root directory of the iPod's drive letter (e.g. <code>L:\</code>). On Mac OS X, it's something like <code>/Volumes/My&nbsp;iPod</code>. On other Unixes, it depends &ndash; on my Linux box, it is usually be mounted at <code>/media/sda2</code>, for example.</p>
+
+<p>Once you figured out where you can find the root directory, you should make a backup of the directory <code>/iPod_Control/iTunes</code>. rePear will automatically create a backup of the most important file in there, <code>iTunesDB</code>, but it is always better to have a second safety net. On Windows, it may be necessary to configure Explorer so that it shows hidden files and directories.</p>
+
+
+<h3>2. Install rePear</h3>
+
+<p>If you are on a Windows box, <a href="index.php?page=download">download</a> the <code>.zip</code> file version of rePear and extract it into the iPod's root directory. You should get a <code>rePear</code> subdirectory and some files in the root directory. The two most importand of these are <code>repear.bat</code>, which is a small launcher script if you want to run the command-line version of rePear, and <code>rePearUI.exe</code>, the graphical user interface. This is all you need, everything else is already included in the ZIP file.</p>
+
+<p>On UNIX-like operating systems, <a href="index.php?page=download">download</a> the <code>.tar.gz</code> version and put all the <code>.py</code> and <code>.ini</code> files from the downloaded archive into the iPod root directory (this is a recommendation; if you don't put rePear there, you will have to use the <code>&ndash;r</code> switch described below).<br />
+You will also need a <a href="http://www.python.org/">Python</a> runtime to use rePear. On most Unix distributions (including OS X), it is installed by default. If it isn't, use the package manager to install it or look at the <a href="http://www.python.org/download/">official download page</a> to see what to do. Every version of Python between 2.3 and 2.6 should work.<br />
+If you intend to make use of rePear's Ogg Vorbis transcoding feature, you also need to install OggDec (from the <a href="http://www.xiph.org/downloads/">vorbis-tools</a> package) and <a href="http://lame.sourceforge.net/">LAME</a>. On Unix-like systems, a vorbis-tools package should be available from your package manager, but you may have to compile and install LAME for yourself.<br />
+Furthermore, the cover artwork features require the <a href="http://www.pythonware.com/products/pil/">Python Imaging Library</a> (PIL). Again, this should be available through the package manager.</p>
+
+<p>The &raquo;direct&laquo; way to start the command-line version rePear is to open a console window (on Windows: Start Menu, Run, <code>cmd</code>), go to the iPod root directory (e.g. with <code>L:</code> or <code>cd&nbsp;&quot;/Volumes/My iPod&quot;</code>) and run <code>repear&nbsp;</code><i>[options&nbsp;here]</i> (Windows) or <code>python&nbsp;repear.py&nbsp;</code><i>[options&nbsp;here]</i> (Unix). This method is needed if you want to specify options or tell rePear which action to perform. If you don't need to do this (and you won't for most of the time), you can as well double-click <code>repear.bat</code> on Windows or use the graphical user interface, which has buttons for the most commonly used operations. On Mac OS X, after double-clicking <code>repear.py</code>, the system will ask whether to execute the program in the Terminal when you double-click it the first time. Confirm this message box. If it tells you that &raquo;no default application is specified&laquo;, click &raquo;Choose Application&laquo; and select &raquo;Terminal&laquo;.</p>
+
+
+<h3>3. Configure rePear</h3>
+
+<p>Some of rePear's features require a moderate amount of configuration &ndash; namely, the exact iPod model must be known to generate cover artwork and to use the last.fm scrobbling interface, you need to specify your last.fm login data.</p>
+
+<p>These configuration steps can be done on the command line by running <code>repear&nbsp;config</code>. This will start a small text-based wizard that asks you to pick your model from a list and specify your last.fm credentials. If you don't use last.fm or don't want to use that feature, just press ENTER when asked for the login name.</p>
+
+<p>In the Windows GUI, there's a &raquo;config&laquo; button that opens a small dialog window with the same options: a drop-down menu for the model selection and two fields for the last.fm login data. Just make the appropriate settings here and click &raquo;OK&laquo;.</p>
+
+<p>Another very important step to follow is synchronizing the clocks of the iPod and the computer: If you intend to use last.fm scrobbling, a precise record of when which track has beed played is essential. So please double-check that the iPod's and the computer's clock agree and are set to the same timezome. <strong>This is important</strong>, because last.fm might reject your scrobbled tracks if there are any inconsistencies in the play times.</p>
+
+
+<h3>4. Import tracks (optional)</h3>
+
+<p>If you still have some tracks in the iPod database that were previously installed with iTunes, you can either keep them in place or have rePear sort them back into directories. If your iPod is empty, just skip this step completely.</p>
+
+<p>If you choose to keep them inside the iPod's private directory structures, it will be fine. But note that you will not be able to modify them any further (not even delete them) without iTunes.</p>
+
+<p>The other option is to have rePear <strong>dissect</strong> the iPod's music database. To do this, start rePear with the <code>dissect</code> parameter (like in <code>repear&nbsp;dissect</code>) or click the &raquo;dissect&laquo; button in the GUI. After asking you to confirm your command, rePear will create a new folder <code>Dissected&nbsp;Tracks</code> on the iPod. Inside this folder, rePear will create a typical artist/album/track directory structure. For example, you will get files like <code>/Dissected&nbsp;Tracks/Some&nbsp;Artist/Nice&nbsp;Album/07&nbsp;&ndash;&nbsp;Some&nbsp;Track.mp3</code>. Tracks with album information missing will be put directly in the artist's folder. Tracks without even an artist name will be put directly into <code>Dissected&nbsp;Tracks</code>.</p>
+
+
+<h3>5. Copy your tracks onto the iPod</h3>
+
+<p>Now it's time to make the USB port glow! You can now copy, delete, move or rename tracks on your iPod. You can create virtually any directory structure you want. It's up to you how to organize the files. In particular, you don't need to put them in any special location. iTunes stores them with cryptic names in <code>/iPod_Control/Music</code>, but you don't need to do that. In fact, it's stronly suggested not to put your self-managed files here &ndash; just create a folder elsewhere on the iPod. For example, all my music files go directly into <code>/Music</code>.</p>
+
+
+<h3>6. Run rePear</h3>
+
+<p>Now it's time to run rePear without parameters or select the highlighted &raquo;freeze&laquo; option in the GUI. It will do what I refer to as <strong>freezing</strong> the iPod's database: It will scan the whole filesystem of the iPod for MP3, Ogg and AAC files and move them into the hidden area where the playable tracks are kept, transcoding Ogg to MP3 as needed. While doing this, rePear analyzes each file to get the ID3 metadata information to finally generate a new music database on the iPod.</p>
+
+<p>I'm afraid that this process is quite a lengthy one &ndash; rePear has a &raquo;metadata cache&laquo; that remembers all information about the tracks so that they don't need to be re-scanned the next time when new files are added, but moving the files is very time-consuming in itself. You should make sure to enable the operating system's write cache to get best performance. As a rule of thumb, freezing a 8 GB flash-based iPod should take 2 to 5 minutes.</p>
+
+
+<h3>7. Disconnect the iPod and listen to your music</h3>
+
+<p>After the freezing process is complete, you can disconnect the iPod. You should always do this in a safe manner (&raquo;safe removal of devices&laquo; in the Taskbar Notification Area on Windows; the eject icon next to the iPod volume's icon in Finder on OS X; <code>umount</code> on other Unixes).</p>
+
+<p>You should now be able to listen to your music. If not, please <a href="mailto:martin.fiedler@gmx.net?subject=[rePear]%20">send me a bug report</a> with a precise description of what exactly went wrong, including the log file generated by rePear and a (compressed!) copy of the <code>/iPod_Control/iTunes/iTunesDB</code> file in both versions: The one created by rePear and the one from your previous backup. (And now guess what that backup was good for ... not only for sending me bug reports, but also for fixing your broken iPod again!)</p>
+
+
+
+<h2 class="bar">Managing the rePear tracks &ndash; Step by Step</h2>
+
+<p>Let's imagine that everything went OK (and I hope it did!) and now you want to put new music onto the iPod, remove old tracks or do other maintaining tasks. Here is what you have to do:</p>
+
+
+<h3>1. Plug in the iPod and run rePear</h3>
+
+<p>If you start rePear without any parameters, it will remember that the databaze is frozen and automatically do the right thing: <strong>unfreeze</strong> it. The GUI doesn't do this completely automatically, but at least it will recognize that &raquo;unfreeze&laquo; is the most logical thing to do and thus, it will highlight the according button.</p>
+
+<p>Unfreezing means that all the files you put on the iPod that mysteriously disappeared while freezing (because they were moved to the iPod's sected music hideout) will be put back again. This will not take as long as freezing it, but on iPods that are slow with I/O (most newer models), it will be close.</p>
+
+
+<h3>2. Manage your Music</h3>
+
+<p>If there were no errors, all the files will be back at their original locations and you can now start to copy, move and rename files or directories at will.</p>
+
+
+<h3>3. Run rePear again</h3>
+
+<p>Before disconnecting the iPod, you have to run rePear once again so that it can <strong>freeze</strong> the iPod's music database and move the music files away again. All files that you left untouched will be processed in an instant; new or modified files will take a little bit longer to process.</p>
+
+<p>If you enabled the last.fm scrobbling feature, this will also be the point where the information about when you listened to which tracks will be submitted to last.fm. If a track has been played more than once since the last <code>freeze</code> or <code>update</code>, only the last time it has been played will be submitted. This isn't rePear's fault &ndash; the iPod simply only saves the last playback time.<br />
+If any error occurs while uploading the information to last.fm (like a broken network connection, or just because you're offline), the information will not be lost. Instead, it will be stored and re-submitted the next time the <code>freeze</code> or <code>update</code> action is executed.</p>
+
+
+<h3>4. Disconnect the iPod and listen to your music</h3>
+
+<p>Just like in the setup procedure described above, you may now safely (I mean it!) disconnect the iPod and enjoy your music.</p>
+
+
+
+<h2 class="bar">Details on playlists</h2>
+
+<p>There are two ways to generate playlists with rePear: You can put normal M3U playlist files anywhere on the iPod and rePear will add them to the Playlist menu. These playlists will have the same name as the <code>.m3u</code> file they're created from. The directory name won't be included, so please make sure you don't have a dozen <code>.m3u</code> files with same names on your iPod.</p>
+
+<p>The other, more advanced method of playlist generation are &raquo;automatic&laquo; playlists that are created from the main database with some user-specified rules. In the default configuration, there's already one such playlist: &raquo;Hot New Stuff&laquo; is where rePear puts all new and changed tracks it found into. If you don't like that, you can disable that, of course. This chapter describes how to do that.</p>
+
+<h3>The master playlist file</h3>
+
+<p>All automatic playlists and other playlist options are specified in a single file, which is <code>repear_playlists.ini</code> in the root directory of the iPod. If this file is not present, rePear assumes default options and doesn't generate any automatic playlists (not even  &raquo;Hot New Stuff&laquo;).</p>
+
+<p>The master playlist file looks like a normal Windows INI file, which means it is a text file with lines in the &raquo;<code>key&nbsp;=&nbsp;value</code>&laquo; format. It is subdivided into sections that start with a line with the section name in square brackets, like &raquo;<code>[this]</code>&laquo;. Comments start with a semicolon (<code>;</code>).</p>
+
+<p>Each section in the master playlist file describes one playlist. The playlist name is derived from the section title. There's one exception, though: The first part of the file, before the first section header, is used for general, global playlist options.</p>
+
+<p>Some options require boolean values. In this case, you can use either <code>1</code>/<code>0</code>, <code>yes</code>/<code>no</code>, <code>y</code>/<code>n</code>, <code>on</code>/<code>off</code>, <code>true</code>/<code>false</code> or <code>enable</code>/<code>disable</code> to specify whether that option shall be used or not.</p>
+
+<h3>Global playlist options</h3>
+
+<p>The following options are available in the global options (pseudo-)section at the beginning of the <code>repear_playlists.ini</code> file:</p>
+
+<dl>
+
+<dt><code>skip album playlists</code> <em>(boolean, default: enabled)</em></dt>
+<dd>This option specifies whether playlists that cover exactly one album will be included or not. Normally, these playlists are pointless: The album appears under &raquo;Albums&laquo;, there's no reason why it should be under &raquo;Playlists&laquo;, too. This means that you can keep the <code>.m3u</code> files that usually come with album downloads, without having them clutter your Playlists menu on the iPod. That's why this option is enabled by default &ndash; if you don't like it, you can disable it, though.</dd>
+
+<dt><code>directory playlists</code> <em>(boolean, default: disabled)</em></dt>
+<dd>If this option is enabled, rePear will create a playlist for <strong>every</strong> folder on the iPod filesystem it finds playable files in. Note that the playlist name will only contain the last component of the path name. The files in <code>/Music/foo/bar/*.mp3</code> go into a playlist called &raquo;bar&laquo;, for example.</dd>
+
+</dl>
+
+<h3>Automatic playlist options</h3>
+
+<p>The following options can be used to specify automatic playlists:</p>
+
+<dl>
+
+<dt><code>include&nbsp;=&nbsp;</code><em>&lt;path&gt;</em></dt>
+<dd>Specifies which files shall be included in the playlist, either using a filename pattern like &raquo;<code>*.mp3</code>&laquo; or a directory name like &raquo;<code>/Music</code>&laquo;. In the latter case, the specified directory and all subdirectories will be included.<br />
+By default, no files or directories are included in a playlist. This means that a playlist without any <code>include</code> (or <code>new</code> or <code>changed</code>) statements will be empty. So, to make a usable playlists, there needs to be at least one <code>include</code> statement. The number of <code>include</code>s per playlists is unlimited, so it's perfectly possible to include multiple directories.</dd>
+
+<dt><code>exclude&nbsp;=&nbsp;</code><em>&lt;path&gt;</em></dt>
+<dd>This works like <code>include</code>, but it specifies which files shall <strong>not</strong> be included in the playlist. <code>exclude</code> is &raquo;stronger&laquo; than <code>include</code>, so you can exclude subdirectories of other directories. The number of <code>exclude</code>s per playlists is also unlimited.</dd>
+
+<dt><code>new&nbsp;=&nbsp;</code><em>&lt;boolean&gt;</em></dt>
+<dd>If this option is enabled, the playlist will contain <strong>all</strong> files that reTune found that were not present during the last <code>freeze</code> operation. Note that <code>new</code> is even stronger than <code>include</code> or <code>exclude</code>.</dd>
+
+<dt><code>changed&nbsp;=&nbsp;</code><em>&lt;boolean&gt;</em></dt>
+<dd>If this option is enabled, the playlist will contain <strong>all</strong> files whose metadata changed since the last <code>freeze</code> operation. Like <code>new</code>, <code>changed</code> is even &raquo;stronger&laquo; than <code>include</code> or <code>exclude</code>.</dd>
+
+<dt><code>shuffle&nbsp;=&nbsp;</code><em>&lt;mode&gt;</em></dt>
+<dd>Selects whether or not the playlist shall be shuffled, and which shuffle algorithm shall be used. The default (<code>0</code>, <code>no</code>, <code>off</code>, <code>false</code>, <code>disabled</code> or <code>none</code>) will keep the tracks in their original order. When this option is enabled (using <code>1</code>, <code>yes</code>, <code>on</code>, <code>true</code>, <code>enabled</code> or <code>balanced</code>), an advanced shuffle algorithm will be used that creates a not completely random, but very homogenous order of the tracks. The detailed algorithm is described on <a href="http://keyj.s2000.ws/?p=66">this web page</a>. Alternatively, a normal random shuffle can be selected with <code>2</code>, <code>random</code> or <code>standard</code>.</dd>
+
+<dt><code>sort&nbsp;=&nbsp;</code><em>&lt;criteria&gt;</em></dt>
+<dd>This option specifies the criteria after which the tracks in the playlist shall be sorted. For a detailed explanation of the syntax of these criteria, read below. If there is neither a <code>sort</code> nor a <code>shuffle</code> statement in a playlist definition, the files will be sorted by path and filename. If sorting is enabled, it will take place <strong>after</strong> shuffling. This means that sorting is &raquo;stronger&laquo; than shuffling. If there are multiple <code>sort</code> options in a playlist definition, the sort operations will be performed in the same order as defined, so the last <code>sort</code> will be the strongest one.</dd>
+
+</dl>
+
+<h3>Sort criteria</h3>
+
+<p>The following sort criteria are defined:</p>
+<table id="sortcriteria">
+<tr><th><code>title</code></th><td>Track title.</td></tr>
+<tr><th><code>artist</code></th><td>Track artist.</td></tr>
+<tr><th><code>album</code></th><td>Album title.</td></tr>
+<tr><th><code>year</code></th><td>Year the track has been published in.</td></tr>
+<tr><th><code>compilation</code></th><td>Whether the track is part of a compilation or not.</td></tr>
+<tr><th><code>rating</code></th><td>Rating, as set up in iTunes or the iPod itself.</td></tr>
+<tr><th><code>path</code></th><td>Path of the file.</td></tr>
+<tr><th><code>length</code></th><td>Length of the track.</td></tr>
+<tr><th><code>file size</code></th><td>Size of the file.</td></tr>
+<tr><th><code>mtime</code></th><td>Time of the last modification on the file.</td></tr>
+<tr><th><code>bitrate</code></th><td>Track bitrate.</td></tr>
+<tr><th><code>sample rate</code></th><td>Track sample rate.</td></tr>
+<tr><th><code>track number</code></th><td>The number of the track on the disc.</td></tr>
+<tr><th><code>disc number</code></th><td>The number of the disc in the set.</td></tr>
+<tr><th><code>total discs</code></th><td>The total number of discs in the set.</td></tr>
+<tr><th><code>artwork count</code></th><td>The number of cover artworks associated with the track.</td></tr>
+<tr><th><code>BPM</code></th><td>The BPM speed of the track.</td></tr>
+<tr><th><code>movie flag</code></th><td>Whether the track is a movie or not.</td></tr>
+<tr><th><code>play count</code></th><td>The number of times the track has been played completely.</td></tr>
+<tr><th><code>skip count</code></th><td>The number of times the track has been skipped over. Note that not every iPod stores this value.</td></tr>
+<tr><th><code>start count</code></th><td>The sum of <code>play count</code> and <code>skip count</code>, i.e. the number of times the track has been started.</td></tr>
+<tr><th><code>last played time</code></th><td>The time the track has last been played completely.</td></tr>
+<tr><th><code>last skipped time</code></th><td>The time the track has last been skipped over. Note that not every iPod stores this value.</td></tr>
+<tr><th><code>last started time</code></th><td>Either <code>last played time</code> or <code>last skipped time</code>, whichever is later. In other words, this is the last time the track has been started.</td></tr>
+</table>
+
+<p>Multiple criteria can be combined with commas to form complex sort orders. For example &raquo;<code>artist, year, album, disc number, track number, title</code>&laquo; will sort the tracks by artist, the tracks of each artist will then be sorted by year, the tracks of each year will then be sorted by album, disc number, track number and finally by title. Note that sorting text values will always take place in a case-insensitive manner.</p>
+
+<p>There are also various modifies for each subcriterion which are added as prefixes: A plus sign (&raquo;<code>+</code>&laquo;) will sort in ascending order, which is also the default. A minus sign (&raquo;<code>-</code>&laquo;) will sort in descending order. Angle brackets specify where tracks will be sorted that are missing the value associated with the sort criterion: With &raquo;<code>&lt;</code>&laquo;, empty values will be sorted to the front, with &raquo;<code>&gt;</code>&laquo; (the default), empty values will be sorted to the back of the list. The ordering of the empty values is always independent from the main sort order. &raquo;<code>-year</code>&laquo;, for example, will sort the tracks in descending order by time, but tracks that are missing the &raquo;year&laquo; metadata field will still appear at the end of the sorted list. If this is not desired, &raquo;<code>&lt;-year</code>&laquo; needs to be written.</p>
+
+<h3>Playlist examples</h3>
+
+<p>Finally, here's an example of how a <code>repear_playlists.ini</code> file could look like:</p>
+<pre>[Heavy Metal]
+include = /Music/Metal
+
+[Random Soft Songs]
+include = /Music
+exclude = /Music/Metal
+exclude = /Music/Rock
+shuffle = 1
+sort = artist, album, title
+
+[Audiobooks]
+include = *.book.mp3
+
+[Hot New Stuff]
+new = 1
+changed = 1
+
+[Randomized]
+include = /Music
+shuffle = 1
+sort = start count</pre>
+<p>Each playlist is specified by a header, containing the playlist name in square brackets, and a number of statements in a <code>key = value</code> form. In this example, we define three playlists: &raquo;Heavy Metal&laquo;, &raquo;Random Soft Songs&laquo; and &raquo;Audiobooks&laquo;.</p>
+
+<p>The &raquo;Heavy Metal&laquo; playlist is a very simple one: It consists only of one <code>include</code> statement that tells rePear to put everything in the <code>/Music/Metal</code> directory (and its subdirectories) into that playlist. You could add more <code>include</code> statements if you like.</p>
+
+<p>The &raquo;Random Soft Songs&laquo; playlist basically contains the whole <code>/Music</code> folder, ordered by Artist/Album/Title, but the two <code>exclude</code> statements remove the <code>Metal</code> and <code>Rock</code> subdirectories from that selection. So, what you get would be a collection of all your songs except Metal and Rock ones (given that you organize your music that way, of course). The <code>shuffle = 1</code> statement makes rePear shuffle all the songs in that playlist. If this statement is not present, rePear would add the songs in alphabetic order, subdirectories first &ndash; just like you see them in your file manager if &raquo;sort by filename&laquo; is selected.</p>
+
+<p>The &raquo;Audiobooks&laquo; playlist makes use of a generic filename pattern instead of a directory name. It selects all files whose names end in <code>.book.mp3</code>, regardless of how scattered they are across the iPod's directory structure, and puts them into a common playlist.</p>
+
+<p>The &raquo;Hot New Stuff&raquo; playlist is a special one: The <code>new</code> and <code>changed</code> statements act like special <code>include</code> statements, except that they don't match filenames, but the &raquo;freshness&laquo; of a file. If the <code>new</code> statement is active, rePear will include every file in the playlist that has not been there when the database was last frozen (note that this will include moved files as well!). Likewise, the <code>changed</code> statements instructs rePear to include every file that has been changed, but not added or renamed. In combination, these two statements build a playlist that mirrors every change since the last freeze operation.</p>
+
+<p>Finally, there's the &raquo;Randomized&raquo; playlist, which simply contains the whole <code>/Music</code> folder in random order &ndash; or almost random order, because it's then sorted by start count. This has the effect that tracks that have been played less frequently occur early in the playlist, while tracks that are played often will be put at the end of the list.</p>
+
+
+<h2 class="bar">Details on artwork</h2>
+
+<p>rePear's artwork support tries to make sensible assumptions on what image to display for every title. Consider, for example, a track like <code>/MyMusic/TheAlbum/TheTrack.mp3</code>. The image (JPEG or PNG format) shown for this track will be the first match from this list (sorted from highest to lowest priority):</p><ol>
+<li>an image file with the same name as the music file, but with the filename extension <code>.jpg</code> or <code>.png</code>, like <code>/MyMusic/TheAlbum/TheTrack.jpg</code></li>
+<li>an image file with the same name as the directory of the music file (except the extension, of course), like <code>/MyMusic/TheAlbum/TheAlbum.jpg</code></li>
+<li>an image file in the same directory as the music file that contains the word &raquo;front&laquo; somewhere in its name, like <code>/MyMusic/TheAlbum/front.jpg</code> or <code>/MyMusic/TheAlbum/Image_Front.jpg</code> (this rule is there to ensure that &raquo;front&laquo; covers are prioritzed over &raquo;back&laquo; covers, even though the latter ones come first in the alphabet)</li>
+<li>an image file in the same directory that contains the word &raquo;cover&laquo;, like <code>/MyMusic/TheAlbum/cover_image.jpg</code></li>
+<li>the first image file (in alphabetic order) in the directory, like <code>/MyMusic/TheAlbum/SomeImage.jpg</code></li>
+<li>an image file with the same name as the directory, but located in the parent directory, like <code>/MyMusic/TheAlbum.jpg</code></li>
+<li>the directoy-specific rules are inherited to subdirectories, i.e. if there is any directory-wide image file for one of the parent directories, it will be used for subdirectories, too; consider, for example, <code>/MyMusic/MyMusic.jpg</code></li>
+</ol>
+
+<p>Please read rule #7 carefully: If you have some totally music-unrelated image files in the root directory, the first of these images will be assigned to every track of the iPod (except those that have higher-priority images, of course). You probably don't want that, so keep your folders clean :)</p>
+
+
+<h2 class="bar">Details on last.fm scrobbling</h2>
+
+<p>Some options regarding the last.fm scrobble feature can be set up in another <code>.ini</code> file in the iPod's root directory: <code>repear_scrobble.ini</code> is located right next to <code>repear_playlists.ini</code> and is syntactically similar. It also looks like a Windows INI file, but it lacks the sections.</p>
+
+<p>The most important things to set up in this file are <code>username</code> and <code>password</code> &ndash; these are your last.fm credentials. The password can be specified either in plaintext or as a MD5 sum. Neither method is really secure, but the MD5 sum at least makes it impossible to guess the plaintext password, so this is the recommended method. Normally, you don't need to set these values anyway, as the setup options in rePear and the GUI launcher already take care of this.</p>
+
+<p>However, there are additional options in this file that need to be put there by hand if they're needed: The <code>exclude</code> options can specify directories or filename patterns for which scrobbling shall not take place. This is useful if you don't want some of your tracks appear in your last.fm profile, like audiobooks.</p>
+
+
+
+<h2 class="bar">A more detailed look at rePear's options and actions</h2>
+
+<p>As stated above, rePear automatically chooses between the <strong>freeze</strong> and <strong>unfreeze</strong> actions if it is started without parameters. However, you can override this by specifying the action as a command-line parameter (like in the <strong>dissect</strong> example: <code>repear&nbsp;dissect</code>). The following actions are available:</p>
+
+<dl class="keywords">
+
+<dt>help</dt><dd>Shows the brief help message and exits the program after that.</dd>
+
+<dt>auto</dt><dd>Automatically choose between <strong>freeze</strong> and <strong>unfreeze</strong>, based on the current state of the cache. This is the default if no action is specified.</dd>
+
+<dt>freeze</dt><dd>Scans the iPod for playable music files, moves them into the <code>/iPod_Control/Music</code> directory and generates an <code>iTunesDB</code> from it.</dd>
+
+<dt>unfreeze</dt><dd>Moves music files that have previously been moved into <code>/iPod_Control/Music</code> by the freeze action back to their original locations.</dd>
+
+<dt>update</dt><dd>Rebuilds <code>iTunesDB</code> based on rePear's internal cache with the data from the last freeze. In principle, this is identical to the freeze action, except that it doesn't search for new files. However, it will update play counts, scrobble tracks to last.fm and rebuild the automatic playlists specified in the <code>repear_playlists.ini</code> file.</dd>
+
+<dt>dissect</dt><dd>Parses the current <code>iTunesDB</code> and moves all tracks found there into a directory following a <code>/Dissected Tracks/</code>&lt;artist&gt;<code>/</code>&lt;album&gt;<code>/</code>&lt;title&gt; scheme.</dd>
+
+<dt>reset</dt><dd>Deletes rePear's metadata cache. All information about the tracks installed on the iPod will be erased, but the music files themselves will remain. Note that if this is done while the database is in the frozen state, the information about the original filenames will be lost, too, so the files will be &raquo;trapped&laquo; in <code>/iPod_Control/Music</code>.</dd>
+
+<dt>cfg-fwid</dt><dd>Tries to determine the serial number (FWID) of the currently attached iPod. This will also be done automatically during the first <code>freeze</code> operaton, but the auto-detection can also be started manually with this option.<br />
+The serial number needs to be known because some newer iPods (nano 3G, classic 6G and newer) require a checksum in the iTunesDB file that depends on the serial number.</dd>
+
+<dt>cfg-model</dt><dd>Runs the (text-based) model selection wizard.</dd>
+
+<dt>cfg-scrobble</dt><dd>Runs the (text-based) scrobble configuration wizard.</dd>
+
+<dt>config</dt><dd>Runs all of the <code>cfg</code> options, one after another.</dd>
+
+</dl>
+
+
+<h3>Command-line options</h3>
+
+<p>To get command-line help, run <code>repear&nbsp;&ndash;h</code>. This will also tell you about some other options that are available. These should be placed between <code>repear</code> and the action name:</p>
+
+<ul>
+<li>Use <strong>&ndash;r</strong>&nbsp;<i>[some path]</i> to tell rePear where the iPod's root directory is. This is useful if rePear can't determine from what directory it was called, or if you deliberately don't want to keep rePear in the iPod's root directory.</li>
+<li><strong>&ndash;l</strong>&nbsp;<i>[some filename]</i> specifies where the rePear logfile should be written to.</li>
+<li><strong>&ndash;L</strong>&nbsp;<i>[options]</i> can be used to override the LAME encoding options that are used when transcoding Ogg files.</li>
+<li>Usage of the option <strong>&ndash;m</strong>&nbsp;<i>[model]</i> is required for the cover artwork feature. This option is only used for the <code>freeze</code> action, and its value is saved for upcoming freeze actions that won't need this option again. It can also be set using the configuration wizard or the GUI. Valid models are:
+<table id="modeltab">
+<tr><td><code>nano</code>, <code>nano1g</code> or <code>nano2g</code></td><td>iPod nano, first or second generation</td></tr>
+<tr><td><code>4g</code> or <code>photo</code></td><td>iPod photo (4th generation)</td></tr>
+<tr><td><code>5g</code> or <code>video</code></td><td>iPod video (5th generation)</td></tr>
+<tr><td><code>6g</code>, <code>classic</code> or <code>nano3g</code></td><td>iPod classic (6th generation) or iPod nano third generation (&raquo;fat nano&laquo;)</td><tr><td><code>nano4g</code></td><td>iPod nano 4th generation</td></tr>
+</table></li>
+<li><strong>&ndash;f</strong> deactivates the confirmation prompts that are shown when doing &raquo;uncommon&laquo; things.</li>
+<li><strong>&ndash;p</strong>&nbsp;<i>[some filename]</i> specifies the location of the master playlist file.</li>
+<li><strong>&ndash;s</strong>&nbsp;<i>[some filename]</i> specifies the location of the scrobble configuration file.</li>
+<li>On Windows systems, rePear will wait for a keypress after it is done. The <strong>&ndash;&ndash;nowait</strong> option deactivates this behavior.</li>
+</ul>
+
+
+<!--EOT-->
+</body></html>
