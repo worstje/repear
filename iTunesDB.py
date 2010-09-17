@@ -197,6 +197,8 @@ class TrackItemRecord(Record):
             default_artwork_size = 0
         if 'video format' in info:
             media_type = 2
+        elif ('Audiobook' in info.get('genre', '')):   #JW
+            media_type = 8
         else:
             media_type = 1
         Record.__init__(self, (
@@ -271,7 +273,7 @@ class TrackItemRecord(Record):
             F_Padding(52), # padding before mhii link
             F_Int32(info.get('mhii link', 0))
         ))
-        for mhod_type, key in ((1,'title'), (4,'artist'), (3,'album'), (5,'genre'), (6,'filetype'), (2,'path')):
+        for mhod_type, key in ((1,'title'), (4,'artist'), (3,'album'), (5,'genre'), (6,'filetype'), (12,'composer'), (2,'path')):
             if key in info:
                 value = info[key]
                 if key=="path":
@@ -528,23 +530,39 @@ class ArtworkFormat:
         else:
             log(" [%dx%d]" % (self.width, self.height), True)
 
-            # sx/sy = resulting image size
+            ## sx/sy = resulting image size
+            #sx = self.width
+            #sy = image.size[1] * sx / image.size[0]
+            #if sy > self.height:
+            #    sy = self.height
+            #    sx = image.size[0] * sy / image.size[1]
+            ## mx/my = margin size
+            #mx = self.width  - sx
+            #my = self.height - sy
+
+            # ADDED+MODIFIED BY JW - use crop of center of image
+            #   instead of adding white borders to rectangular items
+            #width, height = image.size[0], image.size[1]
             sx = self.width
             sy = image.size[1] * sx / image.size[0]
-            if sy > self.height:
+            # note the swapped direction of the comparison :)
+            if sy < self.height:
                 sy = self.height
                 sx = image.size[0] * sy / image.size[1]
-            # mx/my = margin size
             mx = self.width  - sx
             my = self.height - sy
-
-            # process the image
             temp = image.resize((sx, sy), Image.ANTIALIAS)
             thumb = Image.new('RGB', (self.width, self.height), (255, 255, 255))
             thumb.paste(temp, (mx/2, my/2))
             del temp
             data = self.format.convert(thumb.tostring())
             del thumb
+            # now some added code:
+            sx = self.width
+            sy = self.height
+            mx = 0
+            my = 0
+            
 
         # save the image
         try:

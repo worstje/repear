@@ -1313,7 +1313,7 @@ def parse_master_playlist_file():
 ## artwork                                                                    ##
 ################################################################################
 
-re_cover = re.compile(r'[^a-z]cover[^a-z]')
+re_cover = re.compile(r'[^a-z](?:cover)[^a-z]')  # Modified by JW
 re_front = re.compile(r'[^a-z]front[^a-z]')
 def find_good_artwork(files, base):
     if not files:
@@ -1328,6 +1328,10 @@ def find_good_artwork(files, base):
         # if the file has the same name as the directory, we'll use that directly
         if ref == basename:
             return name
+        # if the file name equals cover, that is our image. (JW)
+        if ref == "cover":
+            return name
+        
         ref = "|%s|" % ref
         score = 0
         if re_cover.search(ref):
