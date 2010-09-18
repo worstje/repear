@@ -136,7 +136,7 @@ ARTWORK_DB_FILE = ARTWORK_DIR + u"ArtworkDB"
 def OLDNAME(x): return x.replace(u"repear", u"retune")
 
 import sys, optparse, os, fnmatch, stat, string, time, types, cPickle, random
-import re, warnings, traceback, getpass, md5
+import codecs, re, warnings, traceback, getpass, md5
 warnings.filterwarnings('ignore', category=RuntimeWarning)  # for os.tempnam()
 import iTunesDB, mp3info, hash58, scrobble
 Options = {}
@@ -1138,10 +1138,12 @@ def process_m3u(db, tracklist, index, filename, skip_album_playlists):
     if not(filename) or not(tracklist):
         return
     basedir, list_name = os.path.split(filename)
-    list_name = unicode(os.path.splitext(list_name)[0], sys.getfilesystemencoding(), 'replace')
+    list_name = os.path.splitext(list_name)[0]
+    if (isinstance(list_name, str)):
+        list_name = unicode(list_name, sys.getfilesystemencoding(), 'replace')
     log("Processing playlist `%s': " % iTunesDB.kill_unicode(list_name), True)
     try:
-        f = open(filename, "r")
+        f = codecs.open(filename, "r", sys.getfilesystemencoding())
     except IOError, e:
         log("ERROR: cannot open `%s': %s\n" % (filename, e.strerror))
     tracks = []
