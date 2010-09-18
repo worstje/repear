@@ -1315,14 +1315,14 @@ def parse_master_playlist_file():
 ## artwork                                                                    ##
 ################################################################################
 
-re_cover = re.compile(r'[^a-z](?:cover)[^a-z]')  # Modified by JW
+re_cover = re.compile(r'[^a-z]cover[^a-z]')
 re_front = re.compile(r'[^a-z]front[^a-z]')
 def find_good_artwork(files, base):
     if not files:
         return None   # sorry, no files here
     dirname, basename = os.path.split(base)
-    if not basename:
-        dirname, basename = os.path.split(base)
+    if not basename:  # likely extra / or \ at end of string
+        dirname, basename = os.path.split(base[:-1])
     basename = basename.strip().lower()
     candidates = []
     for name in files:
@@ -1330,16 +1330,17 @@ def find_good_artwork(files, base):
         # if the file has the same name as the directory, we'll use that directly
         if ref == basename:
             return name
-        # if the file name equals cover, that is our image. (JW)
-        if ref == "cover":
-            return name
         
-        ref = "|%s|" % ref
+        ref_re = "|%s|" % ref
         score = 0
-        if re_cover.search(ref):
+        if os.path.basename(ref) == "cover":
+            # if the name equals "cover", it is among the best of the best
+            score = -3
+        elif re_cover.search(ref_re):
             # if the name contains the word "cover", it's a good candidate
             score = -1
-        if re_front.search(ref):
+        
+        if re_front.search(ref_re):
             # if the name contains the word "front", that's even better
             score = -2
         candidates.append((score, name.lower(), name))
