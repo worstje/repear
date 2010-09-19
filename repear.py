@@ -1168,6 +1168,7 @@ def process_m3u(db, tracklist, index, filename, skip_album_playlists):
             if not 'album' in info: continue
             if not ref_album:
                 ref_album = info['album']
+                ok = False  # do not discriminate against one-track albums
             elif info['album'] != ref_album:
                 ok = True  # "this playlist is mixed-album, so it's clean"
                 break
